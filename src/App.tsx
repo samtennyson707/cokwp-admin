@@ -5,6 +5,8 @@ import Dashboard from './pages/Dashboard'
 import ProtectedRoute from './components/ProtectedRoute'
 import { supabase } from './services/supabase'
 import { useSessionStore } from './store/session'
+import Layout from './layout'
+import { ThemeProvider } from './components/theme-provider'
 
 function App() {
   const { setUser } = useSessionStore()
@@ -13,12 +15,13 @@ function App() {
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
+        console.log('Auth state change:', _event, session)
         setUser(session?.user ?? null)
-        if (session) {
-          navigate('/dashboard')
-        } else {
-          navigate('/login')
-        }
+        // if (session) {
+        //   navigate('/dashboard')
+        // } else {
+        //   navigate('/login')
+        // }
       }
     )
 
@@ -28,12 +31,16 @@ function App() {
   }, [setUser, navigate])
 
   return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route element={<ProtectedRoute />}>
-        <Route path="/dashboard" element={<Dashboard />} />
-      </Route>
-    </Routes>
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route element={<ProtectedRoute />}>
+          <Route element={<Layout />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+          </Route>
+        </Route>
+      </Routes>
+    </ThemeProvider>
   )
 }
 
