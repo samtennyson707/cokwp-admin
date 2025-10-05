@@ -7,6 +7,8 @@ import { supabase } from './services/supabase'
 import { useSessionStore } from './store/session'
 import Layout from './layout'
 import { ThemeProvider } from './components/theme-provider'
+import QuizManagement from './pages/QuizManagement'
+import UserManagement from './pages/UserManagement'
 
 function App() {
   const { setUser } = useSessionStore()
@@ -37,6 +39,8 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route element={<Layout />}>
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/users" element={<UserManagement />} />
+            <Route path="/quizzes" element={<QuizManagement />} />
           </Route>
         </Route>
       </Routes>
