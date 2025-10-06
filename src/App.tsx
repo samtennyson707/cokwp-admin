@@ -9,6 +9,7 @@ import Layout from './layout'
 import { ThemeProvider } from './components/theme-provider'
 import QuizManagement from './pages/QuizManagement'
 import UserManagement from './pages/UserManagement'
+import { Toaster } from 'sonner';
 
 function App() {
   const { setUser } = useSessionStore()
@@ -44,6 +45,13 @@ function App() {
           </Route>
         </Route>
       </Routes>
+      <Toaster
+        position="top-right"
+        richColors
+        expand
+        visibleToasts={4}
+        duration={4000}
+      />
     </ThemeProvider>
   )
 }

@@ -20,12 +20,14 @@ export const useSessionStore = create<SessionState>()(
         }
         if (error) {
           console.error('Error logging in:', error)
+          throw new Error(error.message)
         }
       },
       handleSignOut: async () => {
         const { error } = await supabase.auth.signOut()
         if (error) {
           console.error('Error logging out:', error)
+          throw new Error(error.message)
         }
         set((state) => ({ ...state, user: null, isAuthenticated: false }))
       },
@@ -33,7 +35,7 @@ export const useSessionStore = create<SessionState>()(
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
-        });
+        })
 
         if (!data.user) {
           console.error('Error registering:', error)

@@ -1,57 +1,123 @@
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { showErrorToast, showSuccessToast } from '@/lib/toast-util'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { useSessionStore } from '../store/session'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { useState } from 'react';
+import { loginFormSchema } from '@/lib/validation-schemas'
+import { Eye, EyeOff } from 'lucide-react'
+import { useState } from 'react'
+import { useSessionStore } from '@/store/session'
+
+const formSchema = loginFormSchema
 
 export default function Login() {
-  const { handleSignIn, handleAdminRegistration } = useSessionStore();
-  const [email, setEmail] = useState('priya.shukla@cokwp.com');
-  const [password, setPassword] = useState('Chemistry@123');
+  const { handleSignIn } = useSessionStore()
+  const [showPassword, setShowPassword] = useState(false);
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  })
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
-  };
-
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value);
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    handleSignIn(email, password);
-  };
-
-  const handleRegister = async () => {
-    await handleAdminRegistration(email, password);
-  };
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      await handleSignIn(values.email, values.password)
+      showSuccessToast('Login successful')
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      showErrorToast(errorMessage)
+    }
+  }
 
   return (
-    <div className='flex flex-col items-center justify-center min-h-screen'>
-      <div className='max-w-xl w-full m-auto p-8 rounded-md  rounded-md'>
-        <form onSubmit={handleSubmit} className='flex flex-col items-center gap-2 '>
-          <p className='text-2xl font-bold text-gray-500'>
-            Login to manage your courses and students
-          </p>
-          <Input
-            type='email'
-            placeholder='Email'
-            value={email}
-            onChange={handleEmailChange}
-            className='w-full p-2 border border-gray-300 rounded-md mb-2'
-          />
-          <Input
-            type='password'
-            placeholder='Password'
-            value={password}
-            onChange={handlePasswordChange}
-            className='w-full p-2 border border-gray-300 rounded-md mb-2'
-          />
-          <Button type='submit' className='w-full'>Login with Email</Button>
-          <Button type='button' onClick={handleRegister}>
-            Register Admin
-          </Button>
-        </form>
-      </div>
+    <div className="flex flex-col min-h-screen h-full w-full items-center justify-center px-4">
+      <Card className="mx-auto max-w-md w-full">
+        <CardHeader>
+          <CardTitle className="text-2xl">Login</CardTitle>
+          <CardDescription>
+            Enter your email and password to login to your account.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <div className="grid gap-4">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem className="grid gap-2">
+                      {/* <FormLabel htmlFor="email">Email</FormLabel> */}
+                      <FormControl>
+                        <Input
+                          id="email"
+                          placeholder="johndoe@mail.com"
+                          type="email"
+                          autoComplete="email"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem className="grid gap-2">
+
+                      <FormControl>
+                        <div className="relative">
+                          <Input
+                            id="password"
+                            placeholder="******"
+                            autoComplete="current-password"
+                            type={showPassword ? "text" : "password"}
+                            {...field}
+                          />
+                          <span
+                            className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+                            onClick={() => setShowPassword(!showPassword)}
+                          >
+                            {showPassword ? (
+                              <EyeOff className="h-5 w-5 text-gray-500" />
+                            ) : (
+                              <Eye className="h-5 w-5 text-gray-500" />
+                            )}
+                          </span>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" className="w-full">
+                  Login
+                </Button>
+
+              </div>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
     </div>
   )
 }
