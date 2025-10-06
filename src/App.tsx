@@ -19,11 +19,11 @@ function App() {
       (_event, session) => {
         console.log('Auth state change:', _event, session)
         setUser(session?.user ?? null)
-        // if (session) {
-        //   navigate('/dashboard')
-        // } else {
-        //   navigate('/login')
-        // }
+        if (session) {
+          navigate('/dashboard')
+        } else {
+          navigate('/login')
+        }
       }
     )
 

@@ -1,12 +1,10 @@
-import { supabase } from '../services/supabase'
 import { useSessionStore } from '../store/session'
 
 export default function Dashboard() {
-  const { user, clearSession } = useSessionStore()
+  const { user, handleSignOut } = useSessionStore()
 
   const handleLogout = async () => {
-    await supabase.auth.signOut()
-    clearSession()
+    await handleSignOut()
   }
 
   return (
