@@ -8,8 +8,16 @@ import {
 } from "@/components/ui/sidebar"
 import { navigationLinks } from "../constants/navigation"
 import { Link } from "react-router-dom"
+import { UserIcon } from "lucide-react";
+import { useSessionStore } from "@/store/session";
+import { Button } from "./ui/button";
 
 export function AppSidebar() {
+  const { userSession, handleSignOut } = useSessionStore()
+
+  const handleLogout = async () => {
+    await handleSignOut()
+  }
   return (
     <Sidebar>
       <SidebarHeader />
@@ -28,7 +36,9 @@ export function AppSidebar() {
           })}
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter />
+      <SidebarFooter>
+        <Button variant={"destructive"} onClick={handleLogout}>Logout</Button>
+      </SidebarFooter>
     </Sidebar>
   )
 }

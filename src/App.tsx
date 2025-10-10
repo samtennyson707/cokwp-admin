@@ -10,16 +10,18 @@ import { ThemeProvider } from './components/theme-provider'
 import QuizManagement from './pages/QuizManagement'
 import UserManagement from './pages/UserManagement'
 import { Toaster } from 'sonner';
+import { useProfileStore } from './store/profile-store'
 
 function App() {
-  const { setUser } = useSessionStore()
+  const userSession = useSessionStore((state) => state.userSession)
+  const { setSession } = useSessionStore()
   const navigate = useNavigate()
 
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
-        console.log('Auth state change:', _event, session)
-        setUser(session?.user ?? null)
+        console.log('Auth state change:', session)
+        setSession(session ?? null)
         if (session) {
           navigate('/dashboard')
         } else {
@@ -31,8 +33,7 @@ function App() {
     return () => {
       authListener.subscription.unsubscribe()
     }
-  }, [setUser, navigate])
-
+  }, [navigate])
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <Routes>

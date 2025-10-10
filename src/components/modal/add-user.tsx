@@ -1,15 +1,9 @@
-import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import { showErrorToast, showSuccessToast } from '@/lib/toast-util'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from '@/components/ui/form'
-import { Button } from '@/components/ui/button'
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogClose, DialogFooter } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { useModal } from "@/hooks/use-modal";
+import Login from "@/pages/Login";
+import { EyeOff, Eye } from "lucide-react";
+
 import {
   Card,
   CardContent,
@@ -17,15 +11,28 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from '@/components/ui/form'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { useState } from "react";
 import { loginFormSchema } from '@/lib/validation-schemas'
-import { Eye, EyeOff } from 'lucide-react'
-import { useState } from 'react'
+import { showErrorToast, showSuccessToast } from '@/lib/toast-util'
 import { useSessionStore } from '@/store/session'
+import { Input } from "@/components/ui/input";
+
+type MyModalProps = {
+
+};
 
 const formSchema = loginFormSchema
-
-export default function Login() {
+export function AddUserModal({ }: MyModalProps) {
   const { handleSignIn, handleAdminRegistration } = useSessionStore()
   const [showPassword, setShowPassword] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
@@ -38,36 +45,37 @@ export default function Login() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      await handleSignIn(values.email, values.password)
-      showSuccessToast('Login successful')
+      // await handleSignIn(values.email, values.password)
+      // showSuccessToast('Login successful')
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-      showErrorToast(errorMessage)
+      // showErrorToast(errorMessage)
     }
   }
 
-  const handleRegisterAdminClick = async () => {
+  const handleRegisterUserClick = async () => {
     const email = form.getValues('email')
     const password = form.getValues('password')
     try {
       await handleAdminRegistration(email, password)
-      showSuccessToast('Admin registration successful')
+      showSuccessToast('User registration successful')
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error'
       showErrorToast(errorMessage)
     }
   }
-
   return (
-    <div className="flex flex-col min-h-screen h-full w-full items-center justify-center px-4">
-      <Card className="mx-auto max-w-md w-full">
-        <CardHeader>
-          <CardTitle className="text-2xl">Login</CardTitle>
-          <CardDescription>
-            Enter your email and password to login to your account.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+    <Dialog >
+      <DialogTrigger asChild>
+        <Button>Add User</Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-md w-full p-6 rounded-lg bg-card">
+        <DialogHeader>
+          <DialogTitle>Add User</DialogTitle>
+        </DialogHeader>
+        <div className="mt-4">
+          {/* Add user form goes here */}
+
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <div className="grid gap-4">
@@ -76,7 +84,6 @@ export default function Login() {
                   name="email"
                   render={({ field }) => (
                     <FormItem className="grid gap-2">
-                      {/* <FormLabel htmlFor="email">Email</FormLabel> */}
                       <FormControl>
                         <Input
                           id="email"
@@ -121,17 +128,16 @@ export default function Login() {
                     </FormItem>
                   )}
                 />
-                {/* <Button type="submit" className="w-full">
-                  Login
-                </Button> */}
-                <Button type='button' onClick={handleRegisterAdminClick}>
-                  Register Admin
+                <Button type='button' onClick={handleRegisterUserClick}>
+                  Register User
                 </Button>
               </div>
             </form>
           </Form>
-        </CardContent>
-      </Card>
-    </div>
-  )
+
+        </div >
+
+      </DialogContent >
+    </Dialog >
+  );
 }
