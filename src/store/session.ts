@@ -38,18 +38,42 @@ export const useSessionStore = create<SessionState>()(
           const { data, error } = await supabase.auth.signUp({
             email,
             password,
-            options: {
-              data: {
-                // role: 'admin',
-                // full_name: email.split('@')[0],
-                first_name: email.split('@')[0] + '_first',
-                last_name: email.split('@')[0] + '_last',
-                avatar_url: 'https://example.com/avatar.jpg',
-              },
-            },
           })
           if (error) {
             throw new Error(error.message)
+          }
+          const { error: profileError } = await supabase.from('profiles').insert({
+            id: data?.user?.id,
+            first_name: email.split('@')[0] + '_first',
+            last_name: email.split('@')[0] + '_last',
+            avatar_url: 'https://example.com/avatar.jpg',
+            isAdmin: true,
+            phone: ''
+          })
+          if (profileError) {
+            throw new Error(profileError.message)
+          }
+          set(() => ({ userSession: data.user, isAuthenticated: true }))
+        },
+
+        handleUserRegistration: async (email: string, password: string, first_name: string, last_name: string) => {
+          const { data, error } = await supabase.auth.signUp({
+            email,
+            password,
+          })
+          if (error) {
+            throw new Error(error.message)
+          }
+          const { error: profileError } = await supabase.from('profiles').insert({
+            id: data?.user?.id,
+            first_name,
+            last_name,
+            avatar_url: 'https://example.com/avatar.jpg',
+            isAdmin: false,
+            phone: ''
+          })
+          if (profileError) {
+            throw new Error(profileError.message)
           }
           set(() => ({ userSession: data.user, isAuthenticated: true }))
         },
@@ -59,5 +83,4 @@ export const useSessionStore = create<SessionState>()(
       }
     ),
   )
-
 )

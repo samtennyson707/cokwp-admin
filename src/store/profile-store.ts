@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { devtools, persist } from 'zustand/middleware'
-import type { ProfileState } from '@/types/profile'
+import type { ProfileState, TProfile } from '@/types/profile'
 import { supabase } from '@/services/supabase';
 
 export const useProfileStore = create<ProfileState>()(
@@ -8,22 +8,19 @@ export const useProfileStore = create<ProfileState>()(
     persist(
       (set) => ({
         profile: null,
-        setProfile: (profile: any) => set((state) => ({ ...state, profile })),
-        fetchProfile: async (user: any) => {
-          const { data, error } = await supabase.from("profiles").select().eq("id", user.id).single();
-          if (data) {
-            set((state) => ({ ...state, profile: data }))
-          }
-          if (error) {
-            console.error('Error fetching profile:', error)
-            throw new Error(error.message)
-          }
+        setProfile: (profile: TProfile | null) =>
+          set({ profile }, false, "setProfile"),
+        fetchProfile: async (userId: string) => {
+          const { data, error } = await supabase
+            .from("profiles")
+            .select()
+            .eq("id", userId)
+            .single();
+          if (data) set({ profile: data }, false, "fetchProfile");
+          if (error) console.error(error);
         },
-      }
-      ),
-      {
-        name: 'user-profile',
-      }
-    )
+      }),
+      { name: "Profile store" }
+    ),
   )
-)
+);

@@ -13,16 +13,17 @@ import { Toaster } from 'sonner';
 import { useProfileStore } from './store/profile-store'
 
 function App() {
-  const userSession = useSessionStore((state) => state.userSession)
   const { setSession } = useSessionStore()
   const navigate = useNavigate()
+
+  const { fetchProfile } = useProfileStore()
 
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
-        console.log('Auth state change:', session)
         setSession(session ?? null)
         if (session) {
+          fetchProfile(session.user.id)
           navigate('/dashboard')
         } else {
           navigate('/login')

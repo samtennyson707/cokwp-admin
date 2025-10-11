@@ -1,7 +1,7 @@
 export type ProfileState = {
-    profile: TProfile
-    setProfile: (profile: TProfile) => void,
-    fetchProfile: (user: any) => Promise<void>,
+    profile: TProfile | null,
+    setProfile: (profile: TProfile | null) => void,
+    fetchProfile: (userId: string) => Promise<void>,
 }
 
 export type TProfile = {

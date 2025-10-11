@@ -22,7 +22,7 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { useState } from "react";
-import { loginFormSchema } from '@/lib/validation-schemas'
+import { userRegistrationFormSchema } from '@/lib/validation-schemas'
 import { showErrorToast, showSuccessToast } from '@/lib/toast-util'
 import { useSessionStore } from '@/store/session'
 import { Input } from "@/components/ui/input";
@@ -31,41 +31,39 @@ type MyModalProps = {
 
 };
 
-const formSchema = loginFormSchema
+const formSchema = userRegistrationFormSchema
 export function AddUserModal({ }: MyModalProps) {
-  const { handleSignIn, handleAdminRegistration } = useSessionStore()
+  const { handleUserRegistration } = useSessionStore()
   const [showPassword, setShowPassword] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: 'priya.shukla@cokwp.com',
-      password: 'Chemistry@123',
+      email: '',
+      password: '',
+      first_name: '',
+      last_name: '',
     },
   })
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      // await handleSignIn(values.email, values.password)
-      // showSuccessToast('Login successful')
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-      // showErrorToast(errorMessage)
-    }
+  const handleReset = () => {
+    form.reset()
+    setShowPassword(false)
+    // close modal
   }
 
-  const handleRegisterUserClick = async () => {
-    const email = form.getValues('email')
-    const password = form.getValues('password')
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      await handleAdminRegistration(email, password)
+      await handleUserRegistration(values.email, values.password, values.first_name, values.last_name)
       showSuccessToast('User registration successful')
+      handleReset()
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error'
       showErrorToast(errorMessage)
     }
   }
+
   return (
-    <Dialog >
+    <Dialog>
       <DialogTrigger asChild>
         <Button>Add User</Button>
       </DialogTrigger>
@@ -79,6 +77,42 @@ export function AddUserModal({ }: MyModalProps) {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <div className="grid gap-4">
+                <FormField
+                  control={form.control}
+                  name="first_name"
+                  render={({ field }) => (
+                    <FormItem className="grid gap-2">
+                      <FormControl>
+                        <Input
+                          id="first_name"
+                          placeholder="John"
+                          type="text"
+                          autoComplete="first_name"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="last_name"
+                  render={({ field }) => (
+                    <FormItem className="grid gap-2">
+                      <FormControl>
+                        <Input
+                          id="last_name"
+                          placeholder="Doe"
+                          type="text"
+                          autoComplete="last_name"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="email"
@@ -102,7 +136,6 @@ export function AddUserModal({ }: MyModalProps) {
                   name="password"
                   render={({ field }) => (
                     <FormItem className="grid gap-2">
-
                       <FormControl>
                         <div className="relative">
                           <Input
@@ -128,8 +161,8 @@ export function AddUserModal({ }: MyModalProps) {
                     </FormItem>
                   )}
                 />
-                <Button type='button' onClick={handleRegisterUserClick}>
-                  Register User
+                <Button type='submit'>
+                  Add New User
                 </Button>
               </div>
             </form>
