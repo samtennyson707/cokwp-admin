@@ -1,4 +1,4 @@
-import { Home, Users, type LucideProps } from "lucide-react";
+import { Home, Users, BookOpen, type LucideProps } from "lucide-react";
 import type { ForwardRefExoticComponent } from "react";
 import type { RefAttributes } from "react";
 
@@ -18,5 +18,10 @@ export const navigationLinks: NavItem[] = [
         title: 'Users',
         href: '/users',
         icon: Users,
+    },
+    {
+        title: 'Quizzes',
+        href: '/quizzes',
+        icon: BookOpen,
     },
 ]

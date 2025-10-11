@@ -72,7 +72,7 @@ export function ResponsiveTable<T>({
       <div>
         <div className="space-y-3 sm:p-4 px-2 overflow-x-hidden">
           {data.map((row) => (
-            <Card key={rowKey(row)} className="border border-gray-200 hover:shadow-sm transition-shadow overflow-hidden" >
+            <Card key={rowKey(row)}  >
               <CardContent className="p-4">
                 <div className="space-y-4 cursor-pointer" onClick={() => onCardTitleClick?.(row)}>
                   <div className="flex items-start justify-between">

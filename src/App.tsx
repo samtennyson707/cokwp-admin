@@ -1,16 +1,14 @@
 import { useEffect } from 'react'
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, useNavigate, Navigate } from 'react-router-dom'
 import Login from './pages/Login'
-import Dashboard from './pages/Dashboard'
 import ProtectedRoute from './components/ProtectedRoute'
 import { supabase } from './services/supabase'
 import { useSessionStore } from './store/session'
 import Layout from './layout'
 import { ThemeProvider } from './components/theme-provider'
-import QuizManagement from './pages/QuizManagement'
-import UserManagement from './pages/UserManagement'
 import { Toaster } from 'sonner';
 import { useProfileStore } from './store/profile-store'
+import appRoutes from './constants/routes'
 
 function App() {
   const { setSession } = useSessionStore()
@@ -19,31 +17,32 @@ function App() {
   const { fetchProfile } = useProfileStore()
 
   useEffect(() => {
-    const { data: authListener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setSession(session ?? null)
-        if (session) {
-          fetchProfile(session.user.id)
-          navigate('/dashboard')
-        } else {
-          navigate('/login')
-        }
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      setSession(session ?? null)
+      if (event === 'SIGNED_IN' && session) {
+        fetchProfile(session.user.id)
+        navigate('/dashboard', { replace: true })
       }
-    )
+      if (event === 'SIGNED_OUT') {
+        navigate('/login', { replace: true })
+      }
+    })
 
     return () => {
       authListener.subscription.unsubscribe()
     }
-  }, [navigate])
+  }, [navigate, setSession, fetchProfile])
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route element={<ProtectedRoute />}>
           <Route element={<Layout />}>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/users" element={<UserManagement />} />
-            <Route path="/quizzes" element={<QuizManagement />} />
+            {appRoutes.map((route) => (
+              <Route key={route.path} path={route.path} element={route.element} />
+            ))}
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Route>
         </Route>
       </Routes>
