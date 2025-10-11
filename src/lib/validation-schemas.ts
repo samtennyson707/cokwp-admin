@@ -16,3 +16,13 @@ export const quizFormSchema = z.object({
     description: z.string().optional(),
     is_active: z.boolean().default(true),
 })
+
+export const questionFormSchema = z.object({
+    quiz_id: z.string().uuid({ message: 'Invalid quiz' }),
+    question_text: z.string().min(1, { message: 'Question is required' }),
+    options: z.array(z.string().min(1)).min(2).max(10),
+    correct_answer: z.string().min(1),
+}).refine((val) => val.options.includes(val.correct_answer), {
+    message: 'Correct answer must be one of the options',
+    path: ['correct_answer'],
+})

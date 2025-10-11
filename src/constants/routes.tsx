@@ -2,6 +2,8 @@ import type { ReactElement } from 'react'
 import Dashboard from '@/pages/Dashboard'
 import UserManagement from '@/pages/UserManagement'
 import QuizManagement from '@/pages/QuizManagement'
+import QuestionManagement from '@/pages/QuestionManagement'
+import QuizDetail from '@/pages/QuizDetail'
 
 export interface AppRoute {
   path: string
@@ -23,6 +25,16 @@ const appRoutes: readonly AppRoute[] = [
   {
     path: '/quizzes',
     element: <QuizManagement />,
+    isProtected: true,
+  },
+  {
+    path: '/quizzes/:id',
+    element: <QuizDetail />,
+    isProtected: true,
+  },
+  {
+    path: '/questions',
+    element: <QuestionManagement />,
     isProtected: true,
   },
 ]
