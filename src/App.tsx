@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { BrowserRouter as Router, Routes, Route, useNavigate, Navigate } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, useNavigate, Navigate, useLocation } from 'react-router-dom'
 import Login from './pages/Login'
 import ProtectedRoute from './components/ProtectedRoute'
 import { supabase } from './services/supabase'
@@ -13,15 +13,19 @@ import appRoutes from './constants/routes'
 function App() {
   const { setSession } = useSessionStore()
   const navigate = useNavigate()
+  const location = useLocation()
 
   const { fetchProfile } = useProfileStore()
 
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session ?? null)
-      if (event === 'SIGNED_IN' && session) {
+      if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session) {
         fetchProfile(session.user.id)
-        navigate('/dashboard', { replace: true })
+        // Only redirect to dashboard when landing on login or root
+        if (location.pathname === '/login' || location.pathname === '/') {
+          navigate('/dashboard', { replace: true })
+        }
       }
       if (event === 'SIGNED_OUT') {
         navigate('/login', { replace: true })
@@ -31,7 +35,7 @@ function App() {
     return () => {
       authListener.subscription.unsubscribe()
     }
-  }, [navigate, setSession, fetchProfile])
+  }, [navigate, setSession, fetchProfile, location.pathname])
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <Routes>

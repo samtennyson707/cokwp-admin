@@ -4,6 +4,7 @@ import UserManagement from '@/pages/UserManagement'
 import QuizManagement from '@/pages/QuizManagement'
 import QuestionManagement from '@/pages/QuestionManagement'
 import QuizDetail from '@/pages/QuizDetail'
+import QuizAttempt from '@/pages/QuizAttempt'
 
 export interface AppRoute {
   path: string
@@ -30,6 +31,11 @@ const appRoutes: readonly AppRoute[] = [
   {
     path: '/quizzes/:id',
     element: <QuizDetail />,
+    isProtected: true,
+  },
+  {
+    path: '/quizzes/:id/attempt',
+    element: <QuizAttempt />,
     isProtected: true,
   },
   {

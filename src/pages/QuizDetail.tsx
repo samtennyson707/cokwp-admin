@@ -106,6 +106,18 @@ export default function QuizDetail() {
             <div className="text-sm font-medium">{quiz?.is_active ? 'Active' : 'Inactive'}</div>
           </div>
           <div className="rounded-md border p-4">
+            <div className="text-sm text-muted-foreground">Actions</div>
+            <div className="mt-2">
+              <button
+                type="button"
+                className="inline-flex items-center justify-center h-9 rounded-md border px-3 text-sm"
+                onClick={() => navigate(`/quizzes/${quizId}/attempt`)}
+              >
+                Attempt Quiz
+              </button>
+            </div>
+          </div>
+          <div className="rounded-md border p-4">
             <div className="text-sm text-muted-foreground">Created By</div>
             <div className="text-sm font-medium">{quiz?.created_by ?? '-'}</div>
           </div>
