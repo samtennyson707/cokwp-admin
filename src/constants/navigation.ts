@@ -5,6 +5,7 @@ import type { RefAttributes } from "react";
 interface NavItem {
     title: string
     href: string
+    roles: string[]
     icon: ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>
 }
 
@@ -13,16 +14,19 @@ export const navigationLinks: NavItem[] = [
         title: 'Dashboard',
         href: '/dashboard',
         icon: Home,
+        roles: ['admin', 'student']
     },
     {
         title: 'Users',
         href: '/users',
         icon: Users,
+        roles: ['admin']
     },
     {
         title: 'Quizzes',
         href: '/quizzes',
         icon: BookOpen,
+        roles: ['admin', 'student']
     },
     // {
     //     title: 'Questions',
@@ -33,5 +37,6 @@ export const navigationLinks: NavItem[] = [
         title: 'Results',
         href: '/results',
         icon: BarChart2,
+        roles: ['admin', 'student']
     },
 ]

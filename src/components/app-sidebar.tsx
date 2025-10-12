@@ -19,7 +19,9 @@ export function AppSidebar() {
   const handleLogout = async () => {
     await handleSignOut()
   }
-
+  const filteredNavigation = navigationLinks.filter(item =>
+    item.roles.includes(profile?.isAdmin ? 'admin' : 'student')
+  );
   const renderProfileRole = () => {
     const baseClass = 'text-lg uppercase rounded-full font-medium border border-green-500 px-2 w-fit'
     return (
@@ -33,7 +35,7 @@ export function AppSidebar() {
       <SidebarHeader />
       <SidebarContent>
         <SidebarGroup>
-          {navigationLinks.map((link) => {
+          {filteredNavigation.map((link) => {
             const Icon = link.icon;
             return (
               <SidebarMenuItem key={link.href}>
