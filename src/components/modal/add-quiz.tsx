@@ -11,6 +11,7 @@ import { showErrorToast, showSuccessToast } from '@/lib/toast-util'
 import { useProfileStore } from '@/store/profile-store'
 import { createQuiz } from '@/services/quizzes'
 import type { TQuiz } from '@/types/quiz'
+import { useLoading } from '@/hooks/use-loading'
 
 type AddQuizModalProps = {
   onCreated?: (quiz: TQuiz) => void
@@ -19,12 +20,13 @@ type AddQuizModalProps = {
 export default function AddQuizModal({ onCreated }: AddQuizModalProps) {
   const { profile } = useProfileStore()
   const [open, setOpen] = useState<boolean>(false)
+  const { loading, setLoading } = useLoading()
   const form = useForm<z.input<typeof quizFormSchema>>({
     resolver: zodResolver(quizFormSchema),
     defaultValues: {
       title: '',
       description: '',
-      is_active: true,
+      is_active: false,
     },
   })
 
@@ -39,6 +41,7 @@ export default function AddQuizModal({ onCreated }: AddQuizModalProps) {
       return
     }
     try {
+      setLoading(true)
       const created = await createQuiz(values, profile.id)
       onCreated?.(created)
       showSuccessToast('Quiz created')
@@ -46,6 +49,8 @@ export default function AddQuizModal({ onCreated }: AddQuizModalProps) {
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error'
       showErrorToast(errorMessage)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -86,7 +91,7 @@ export default function AddQuizModal({ onCreated }: AddQuizModalProps) {
                     </FormItem>
                   )}
                 />
-                <Button type="submit">Create</Button>
+                <Button loading={loading} type="submit">Create</Button>
               </div>
             </form>
           </Form>

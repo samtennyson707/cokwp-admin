@@ -70,43 +70,74 @@ export function ResponsiveTable<T>({
   if (isMobile) {
     return (
       <div>
-        <div className="space-y-3 overflow-x-hidden">
+        <div className="space-y-4 overflow-x-hidden">
           {data.map((row) => (
-            <Card key={rowKey(row)}  >
-              <CardContent className="p-4">
-                <div className="space-y-4 cursor-pointer" onClick={() => onCardTitleClick?.(row)}>
-                  <div className="flex items-start justify-between">
-                    <div className="min-w-0">
+            <Card 
+              key={rowKey(row)} 
+              className="border shadow-sm hover:shadow-md transition-shadow duration-200 !py-0"
+            >
+              <CardContent className="p-0">
+                <div className="space-y-0">
+                  {/* Header Section */}
+                  <div 
+                    className="flex items-start justify-between gap-3 p-4 pb-3 border-b "
+                    onClick={() => onCardTitleClick?.(row)}
+                  >
+                    <div className="min-w-0 flex-1">
                       {renderCardTitle && (
                         onCardTitleClick ? (
                           <button
-                            onClick={() => onCardTitleClick(row)}
-                            className="text-sm font-medium  cursor-pointer text-left truncate"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onCardTitleClick(row);
+                            }}
+                            className="text-base font-semibold text-foreground hover:text-primary cursor-pointer text-left truncate w-full transition-colors"
                           >
                             {renderCardTitle(row)}
                           </button>
                         ) : (
-                          <div className="text-sm font-medium truncate">{renderCardTitle(row)}</div>
+                          <div className="text-base font-semibold text-foreground truncate">
+                            {renderCardTitle(row)}
+                          </div>
                         )
                       )}
-                      {renderCardSubtitle && <div className="text-xs truncate">{renderCardSubtitle(row)}</div>}
+                      {renderCardSubtitle && (
+                        <div className="text-sm text-muted-foreground mt-1 truncate">
+                          {renderCardSubtitle(row)}
+                        </div>
+                      )}
                     </div>
                     {renderRowEndActions && (
                       <div
-                        className="flex-shrink-0"
+                        className="flex-shrink-0 -mt-1"
                         onClick={(e) => e.stopPropagation()}
-                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.stopPropagation(); } }}
+                        onKeyDown={(e) => { 
+                          if (e.key === 'Enter' || e.key === ' ') { 
+                            e.stopPropagation(); 
+                          } 
+                        }}
                       >
                         {renderRowEndActions(row)}
                       </div>
                     )}
                   </div>
-                  {visibleMobileColumns.map((col) => (
-                    <div key={col.id} className="grid grid-cols-2 gap-4">
-                      <span className="text-xs  min-w-0">{col.cardLabel || col.header}</span>
-                      <div className="text-xs  min-w-0 break-words whitespace-normal">{col.cell(row)}</div>
-                    </div>
-                  ))}
+
+                  {/* Content Section */}
+                  <div className="p-4 pt-3 space-y-3">
+                    {visibleMobileColumns.map((col, index) => (
+                      <div 
+                        key={col.id} 
+                        className={`flex flex-col gap-1 ${index !== visibleMobileColumns.length - 1 ? 'pb-3 border-b border-border/40' : ''}`}
+                      >
+                        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                          {col.cardLabel || col.header}
+                        </span>
+                        <div className="text-sm text-foreground break-words whitespace-normal leading-relaxed">
+                          {col.cell(row)}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -140,7 +171,7 @@ export function ResponsiveTable<T>({
                 return (
                   <TableHead
                     key={col.id}
-                    className={`table-header px-3 py-2 text-left text-xs font-bold ${col.className || ''}`}
+                    className={`table-header px-3 py-2 text-left text-xs font-bold bg-muted/30 ${col.className || ''}`}
                     style={{ minWidth: col.minWidth ? `${col.minWidth}px` : undefined }}
                   >
                     {canSort ? (
@@ -154,7 +185,7 @@ export function ResponsiveTable<T>({
                           onSortChange({ columnId: col.id, direction: direction || 'desc' });
                         }}
                       >
-                        <span>{col.header}</span>
+                        <span className='text-muted-foreground'>{col.header}</span>
                         {isActive ? (
                           direction === 'asc' ? (
                             <ChevronUp className="h-3 w-3" />
@@ -166,13 +197,13 @@ export function ResponsiveTable<T>({
                         )}
                       </button>
                     ) : (
-                      <span>{col.header}</span>
+                      <span className='text-muted-foreground'>{col.header}</span>
                     )}
                   </TableHead>
                 );
               })}
               {renderRowEndActions && (
-                <TableHead className="px-3 py-2 sticky right-0 bg-card z-10"></TableHead>
+                <TableHead className="px-3 py-2 sticky right-0 z-10"></TableHead>
               )}
             </TableRow>
           </TableHeader>

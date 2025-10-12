@@ -1,12 +1,18 @@
 import { AddUserModal } from '@/components/modal/add-user'
+import EditUserModal from '@/components/modal/edit-user'
+import DeleteUserModal from '@/components/modal/delete-user'
 import { ResponsiveTable, type ColumnDef } from '@/components/responsive-table'
 import { supabase } from '@/services/supabase'
 import type { TProfile } from '@/types/profile'
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { ActionMenu } from '@/components/action-menu'
+import { Button } from '@/components/ui/button'
+import { MoreHorizontal } from 'lucide-react'
 
 export default function UserManagement() {
   const [users, setUsers] = useState<TProfile[]>([])
+  const navigate = useNavigate()
 
   async function fetchProfile() {
     const { data, error } = await supabase.from("profiles").select("*")
@@ -15,6 +21,14 @@ export default function UserManagement() {
     }
     const filteredUsers = data.filter((user) => user.isAdmin === false)
     setUsers(filteredUsers)
+  }
+
+  function handleUserUpdated(updatedUser: TProfile): void {
+    setUsers((prev) => prev.map((user) => user.id === updatedUser.id ? updatedUser : user))
+  }
+
+  function handleUserDeleted(deletedUser: TProfile): void {
+    setUsers((prev) => prev.filter((user) => user.id !== deletedUser.id))
   }
 
   useEffect(() => {
@@ -126,11 +140,63 @@ export default function UserManagement() {
     },
   ]
 
+  function UserActions({ user }: { user: TProfile }) {
+    const menuItems = [
+      { 
+        id: 'view', 
+        label: 'View Details', 
+        onSelect: () => navigate(`/users/${user.id}`) 
+      },
+      { 
+        id: 'edit', 
+        label: 'Edit User', 
+        onSelect: () => {
+          const editButton = document.querySelector(`[data-edit-user="${user.id}"]`) as HTMLElement
+          editButton?.click()
+        }
+      },
+      { 
+        id: 'delete', 
+        label: 'Delete User', 
+        onSelect: () => {
+          const deleteButton = document.querySelector(`[data-delete-user="${user.id}"]`) as HTMLElement
+          deleteButton?.click()
+        }
+      },
+    ]
+
+    return (
+      <div className="flex items-center gap-2">
+        <div className="hidden">
+          <span data-edit-user={user.id}>
+            <EditUserModal user={user} onUpdated={handleUserUpdated} />
+          </span>
+          <span data-delete-user={user.id}>
+            <DeleteUserModal user={user} onDeleted={handleUserDeleted} />
+          </span>
+        </div>
+        <ActionMenu
+          trigger={
+            <Button variant="ghost" size="sm" className="h-7 w-7 p-0 hover:bg-gray-100">
+              <MoreHorizontal className="h-4 w-4 text-gray-400" />
+            </Button>
+          }
+          items={menuItems}
+        />
+      </div>
+    )
+  }
+
   function renderUsersData(users: TProfile[]) {
     return <ResponsiveTable
       data={users}
       columns={columns}
       rowKey={(row) => row.id}
+      renderCardTitle={(row) => <Link to={`/users/${row.id}`} className="text-base font-semibold text-foreground hover:text-primary cursor-pointer text-left truncate w-full transition-colors">{row.first_name} {row.last_name}</Link>}
+      onCardTitleClick={(row) => {
+        navigate(`/users/${row.id}`)
+      }}
+      renderRowEndActions={(row) => <UserActions user={row} />}
     />
   }
 

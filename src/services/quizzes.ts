@@ -1,21 +1,52 @@
 import { supabase } from '@/services/supabase'
 import type { TQuiz, QuizCreateInput, QuizUpdateInput } from '@/types/quiz'
+import { useProfileStore } from '@/store/profile-store'
 
 export async function fetchQuizzes(): Promise<TQuiz[]> {
-  const { data, error } = await supabase
-    .from('quizzes')
-    .select('*')
-    .order('created_at', { ascending: false })
-  if (error) {
-    throw new Error(error.message)
+  const { profile } = useProfileStore.getState();
+
+  if (!profile) {
+    console.log("No profile found");
+    return []
   }
-  return data as TQuiz[]
+
+  let query = supabase
+    .from("quizzes")
+    .select(`
+      *,
+      created_by:profiles (
+        id,
+        first_name,
+        last_name,
+        email
+      )
+    `)
+    .order("created_at", { ascending: false })
+    
+  // 🔹 Apply filter only if user is NOT admin
+  if (!profile.isAdmin) {
+    query = query.eq("is_active", true);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data as TQuiz[];
 }
+
 
 export async function fetchQuizById(id: string): Promise<TQuiz> {
   const { data, error } = await supabase
     .from('quizzes')
-    .select('*')
+    .select(`*, created_by:profiles (
+      id,
+      first_name,
+      last_name,
+      email
+    )`)
     .eq('id', id)
     .single()
   if (error) {
@@ -28,7 +59,12 @@ export async function fetchQuizzesByIds(ids: readonly string[]): Promise<TQuiz[]
   if (ids.length === 0) return []
   const { data, error } = await supabase
     .from('quizzes')
-    .select('*')
+    .select(`*, created_by:profiles (
+      id,
+      first_name,
+      last_name,
+      email
+    )`)
     .in('id', ids as string[])
   if (error) {
     throw new Error(error.message)
@@ -41,7 +77,12 @@ export async function createQuiz(input: QuizCreateInput, userId: string): Promis
   const { data, error } = await supabase
     .from('quizzes')
     .insert(payload)
-    .select('*')
+    .select(`*, created_by:profiles (
+      id,
+      first_name,
+      last_name,
+      email
+    )`)
     .single()
   if (error) {
     throw new Error(error.message)
@@ -54,7 +95,12 @@ export async function updateQuiz(id: string, input: QuizUpdateInput): Promise<TQ
     .from('quizzes')
     .update(input)
     .eq('id', id)
-    .select('*')
+    .select(`*, created_by:profiles (
+      id,
+      first_name,
+      last_name,
+      email
+    )`)
     .single()
   if (error) {
     throw new Error(error.message)
@@ -70,6 +116,24 @@ export async function deleteQuiz(id: string): Promise<void> {
   if (error) {
     throw new Error(error.message)
   }
+}
+
+export async function toggleQuizStatus(id: string, isActive: boolean): Promise<TQuiz> {
+  const { data, error } = await supabase
+    .from('quizzes')
+    .update({ is_active: isActive })
+    .eq('id', id)
+    .select(`*, created_by:profiles (
+      id,
+      first_name,
+      last_name,
+      email
+    )`)
+    .single()
+  if (error) {
+    throw new Error(error.message)
+  }
+  return data as TQuiz
 }
 
 
