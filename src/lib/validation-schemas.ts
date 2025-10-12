@@ -11,6 +11,14 @@ export const userRegistrationFormSchema = loginFormSchema.extend({
     last_name: z.string().min(1, { message: 'Last name is required' }),
 })
 
+export const userUpdateFormSchema = z.object({
+    first_name: z.string().min(1, { message: 'First name is required' }),
+    last_name: z.string().min(1, { message: 'Last name is required' }),
+    email: z.string().email({ message: 'Invalid email address' }),
+    phone: z.string().nullable().optional(),
+    avatar_url: z.string().nullable().optional(),
+})
+
 export const quizFormSchema = z.object({
     title: z.string().min(1, { message: 'Title is required' }),
     description: z.string().optional(),

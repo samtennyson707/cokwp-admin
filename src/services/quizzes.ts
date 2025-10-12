@@ -24,6 +24,18 @@ export async function fetchQuizById(id: string): Promise<TQuiz> {
   return data as TQuiz
 }
 
+export async function fetchQuizzesByIds(ids: readonly string[]): Promise<TQuiz[]> {
+  if (ids.length === 0) return []
+  const { data, error } = await supabase
+    .from('quizzes')
+    .select('*')
+    .in('id', ids as string[])
+  if (error) {
+    throw new Error(error.message)
+  }
+  return data as TQuiz[]
+}
+
 export async function createQuiz(input: QuizCreateInput, userId: string): Promise<TQuiz> {
   const payload = { ...input, is_active: input.is_active ?? true, created_by: userId }
   const { data, error } = await supabase

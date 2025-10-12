@@ -24,6 +24,18 @@ export async function fetchQuestionsByQuizId(quizId: string): Promise<TQuestion[
   return data as TQuestion[]
 }
 
+export async function fetchQuestionsByQuizIdOrdered(quizId: string): Promise<TQuestion[]> {
+  const { data, error } = await supabase
+    .from('questions')
+    .select('*')
+    .eq('quiz_id', quizId)
+    .order('created_at', { ascending: true })
+  if (error) {
+    throw new Error(error.message)
+  }
+  return data as TQuestion[]
+}
+
 export async function createQuestion(input: QuestionCreateInput): Promise<TQuestion> {
   const { data, error } = await supabase
     .from('questions')

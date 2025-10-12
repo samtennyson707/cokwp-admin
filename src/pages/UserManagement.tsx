@@ -58,8 +58,8 @@ export default function UserManagement() {
       className: 'min-w-[80px]',
       cell: (row) => (
         <Link
-          to={`/leads/${row.id}`}
-          className="text-xs font-medium text-left"
+          to={`/users/${row.id}`}
+          className="text-xs font-medium text-left hover:underline"
         >
           {row.id}
         </Link>
@@ -72,8 +72,8 @@ export default function UserManagement() {
       header: 'First Name',
       cell: (row) => (
         <Link
-          to={`/leads/${row.id}`}
-          className="text-xs font-medium text-left"
+          to={`/users/${row.id}`}
+          className="text-xs font-medium text-left hover:underline"
         >
           {row.first_name}
         </Link>
@@ -86,8 +86,8 @@ export default function UserManagement() {
       header: 'Last Name',
       cell: (row) => (
         <Link
-          to={`/leads/${row.id}`}
-          className="text-xs font-medium text-left"
+          to={`/users/${row.id}`}
+          className="text-xs font-medium text-left hover:underline"
         >
           {row.last_name}
         </Link>
@@ -96,17 +96,17 @@ export default function UserManagement() {
       cardOrder: 3,
     },
     {
-      id: 'avatar_url',
-      header: 'Avatar URL',
+      id: 'email',
+      header: 'Email',
       cell: (row) => (
         <Link
-          to={`/leads/${row.id}`}
-          className="text-xs font-medium text-left"
+          to={`/users/${row.id}`}
+          className="text-xs font-medium text-left hover:underline"
         >
-          {row.avatar_url}
+          {row.email}
         </Link>
       ),
-      cardLabel: 'Avatar URL',
+      cardLabel: 'Email',
       cardOrder: 4,
     },
     {
@@ -114,8 +114,8 @@ export default function UserManagement() {
       header: 'Phone',
       cell: (row) => (
         <Link
-          to={`/leads/${row.id}`}
-          className="text-xs font-medium text-left"
+          to={`/users/${row.id}`}
+          className="text-xs font-medium text-left hover:underline"
         >
           {row.phone || '-'}
         </Link>
@@ -134,11 +134,16 @@ export default function UserManagement() {
   }
 
   return (
-    <>
-      <h1>Dashboard</h1>
-      <AddUserModal />
+    <div className="w-full space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-semibold tracking-tight">User Management</h1>
+          <p className="text-sm text-muted-foreground">Manage users and their permissions</p>
+        </div>
+        <AddUserModal />
+      </div>
 
       {renderUsersData(users)}
-    </>
+    </div>
   )
 }

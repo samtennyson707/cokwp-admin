@@ -9,6 +9,7 @@ export type TProfile = {
     email: string
     first_name: string
     last_name: string
-    avatar_url: string
-    phone: string
+    avatar_url: string | null
+    phone: string | null
+    isAdmin: boolean
 }
