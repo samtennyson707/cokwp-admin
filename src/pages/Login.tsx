@@ -26,7 +26,7 @@ import { useSessionStore } from '@/store/session'
 const formSchema = loginFormSchema
 
 export default function Login() {
-  const { handleSignIn, handleAdminRegistration } = useSessionStore()
+  const { handleSignIn } = useSessionStore()
   const [showPassword, setShowPassword] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -46,17 +46,17 @@ export default function Login() {
     }
   }
 
-  const handleRegisterAdminClick = async () => {
-    const email = form.getValues('email')
-    const password = form.getValues('password')
-    try {
-      await handleAdminRegistration(email, password)
-      showSuccessToast('Admin registration successful')
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-      showErrorToast(errorMessage)
-    }
-  }
+  // const handleRegisterAdminClick = async () => {
+  //   const email = form.getValues('email')
+  //   const password = form.getValues('password')
+  //   try {
+  //     await handleAdminRegistration(email, password)
+  //     showSuccessToast('Admin registration successful')
+  //   } catch (error) {
+  //     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+  //     showErrorToast(errorMessage)
+  //   }
+  // }
 
   return (
     <div className="flex flex-col min-h-screen h-full w-full items-center justify-center px-4">
@@ -121,12 +121,12 @@ export default function Login() {
                     </FormItem>
                   )}
                 />
-                {/* <Button type="submit" className="w-full">
+                <Button type="submit" className="w-full">
                   Login
-                </Button> */}
-                <Button type='button' onClick={handleRegisterAdminClick}>
-                  Register Admin
                 </Button>
+                {/* <Button type='button' onClick={handleRegisterAdminClick}>
+                  Register Admin
+                </Button> */}
               </div>
             </form>
           </Form>

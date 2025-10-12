@@ -24,11 +24,11 @@ export const navigationLinks: NavItem[] = [
         href: '/quizzes',
         icon: BookOpen,
     },
-    {
-        title: 'Questions',
-        href: '/questions',
-        icon: ListChecks,
-    },
+    // {
+    //     title: 'Questions',
+    //     href: '/questions',
+    //     icon: ListChecks,
+    // },
     {
         title: 'Results',
         href: '/results',

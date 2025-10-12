@@ -12,6 +12,8 @@ import { fetchQuizzesByIds } from '@/services/quizzes'
 import { fetchProfilesByIds } from '@/services/profiles'
 import { ResponsiveTable, type ColumnDef } from '@/components/responsive-table'
 import { Button } from '@/components/ui/button'
+import { ActionMenu } from '@/components/action-menu'
+import { MoreHorizontal } from 'lucide-react'
 
 export default function QuizResults() {
   const navigate = useNavigate()
@@ -171,6 +173,39 @@ export default function QuizResults() {
     },
   ]
 
+  function QuizResultsActions({ lead }: { lead: TQuizAttempt }) {
+    // const openEditLead = (l: TQuizAttempt) => {
+    //   setEditingLead(l);
+    //   setIsUpdateLeadOpen(true);
+    // };
+
+    // const openAssignAgent = (l: TQuizAttempt) => {
+    //   if (!l?.id) return;
+    //   setAssignLeadId(l.id);
+    //   setIsAssignAgentOpen(true);
+    // };
+
+    const canAssignAgent = true;
+    const menuItems = [
+      { id: 'view', label: 'View Details', onSelect: () => navigate(`/results/${lead?.id || 'unknown'}`) },
+      { id: 'edit', label: 'Edit Lead', onSelect: () => { } },
+      ...(canAssignAgent ? [{ id: 'assign', label: 'Assign Agent', onSelect: () => { } }] : []),
+    ];
+
+    return (
+      <div className="relative">
+        <ActionMenu
+          trigger={
+            <Button variant="ghost" size="sm" className="h-5 w-5 p-0 hover:bg-gray-100">
+              <MoreHorizontal className="h-3 w-3 text-gray-400" />
+            </Button>
+          }
+          items={menuItems}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="w-full space-y-6">
       <div>
@@ -194,40 +229,20 @@ export default function QuizResults() {
               )
             }}
             renderRowEndActions={(row) => (
-              <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => handleViewDetails(row.id)}
-                >
-                  View Details
-                </Button>
-                <button
-                  type="button"
-                  onClick={() => handleToggle(row.id)}
-                  className="text-xs underline"
-                >
-                  {expandedAttemptId === row.id ? 'Hide answers' : 'View answers'}
-                </button>
-              </div>
+              <QuizResultsActions lead={row} />
             )}
+          // renderRowEndActions={(row) => (
+          //   <div className="flex gap-2 relative">
+          //     <Button
+          //       size="sm"
+          //       variant="outline"
+          //       onClick={() => handleViewDetails(row.id)}
+          //     >
+          //       View Details
+          //     </Button>
+          //   </div>
+          // )}
           />
-          {expandedAttemptId && (
-            <div className="mt-4 rounded-md border">
-              <div className="px-3 py-2 text-sm font-medium">Answers</div>
-              <div className="border-t p-3 space-y-2">
-                {(answersByAttemptId[expandedAttemptId] ?? []).map((ans, idx) => (
-                  <div key={ans.id} className={`flex items-center justify-between rounded-md border p-2 ${ans.is_correct ? 'border-emerald-300 bg-emerald-50' : ''}`}>
-                    <div className="text-sm">
-                      <span className="text-muted-foreground mr-2">Q{idx + 1}:</span>
-                      <span>Selected: {ans.selected_option}</span>
-                    </div>
-                    <span className={`text-xs ${ans.is_correct ? 'text-emerald-700' : 'text-destructive'}`}>{ans.is_correct ? 'Correct' : 'Wrong'}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </>
       )}
     </div>

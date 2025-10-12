@@ -70,7 +70,7 @@ export function ResponsiveTable<T>({
   if (isMobile) {
     return (
       <div>
-        <div className="space-y-3 sm:p-4 px-2 overflow-x-hidden">
+        <div className="space-y-3 overflow-x-hidden">
           {data.map((row) => (
             <Card key={rowKey(row)}  >
               <CardContent className="p-4">
@@ -129,10 +129,10 @@ export function ResponsiveTable<T>({
 
   return (
     <div>
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto bg-card rounded">
         <Table>
           <TableHeader>
-            <TableRow className="border-b border-gray-200 hover:bg-transparent">
+            <TableRow className="hover:bg-transparent">
               {visibleDesktopColumns.map((col) => {
                 const isActive = !!sortState && sortState.columnId === col.id;
                 const direction = isActive ? sortState!.direction : undefined;
@@ -172,18 +172,18 @@ export function ResponsiveTable<T>({
                 );
               })}
               {renderRowEndActions && (
-                <TableHead className="px-3 py-2 sticky right-0 bg-white z-10"></TableHead>
+                <TableHead className="px-3 py-2 sticky right-0 bg-card z-10"></TableHead>
               )}
             </TableRow>
           </TableHeader>
           <TableBody>
             {data.map((row) => (
-              <TableRow key={rowKey(row)} className="border-b border-gray-100 ">
+              <TableRow key={rowKey(row)} className=" ">
                 {visibleDesktopColumns.map((col) => (
                   <TableCell key={col.id} className="px-3 py-2">{col.cell(row)}</TableCell>
                 ))}
                 {renderRowEndActions && (
-                  <TableCell className="px-3 py-2 sticky right-0 bg-white z-10">{renderRowEndActions(row)}</TableCell>
+                  <TableCell className="px-3 py-2 sticky right-0 bg-card z-10">{renderRowEndActions(row)}</TableCell>
                 )}
               </TableRow>
             ))}
