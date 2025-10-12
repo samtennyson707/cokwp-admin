@@ -1,4 +1,4 @@
-import { supabase } from '@/services/supabase'
+import { supabase, supabaseServiceRole } from '@/services/supabase'
 import type { SessionState } from '@/types/session'
 import { create } from 'zustand'
 import { devtools, persist } from 'zustand/middleware'
@@ -57,9 +57,11 @@ export const useSessionStore = create<SessionState>()(
         },
 
         handleUserRegistration: async (email: string, password: string, first_name: string, last_name: string) => {
-          const { data, error } = await supabase.auth.signUp({
+          const { data, error } = await supabaseServiceRole.auth.admin.createUser({
             email,
             password,
+            email_confirm: true,
+            role: 'authenticated',
           })
           if (error) {
             throw new Error(error.message)

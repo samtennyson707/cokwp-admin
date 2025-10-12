@@ -19,7 +19,11 @@ import { useSessionStore } from "@/store/session"
 import { showErrorToast, showSuccessToast } from "@/lib/toast-util"
 import { useLoading } from "@/hooks/use-loading"
 
-export function AddUserModal() {
+type AddUserModalProps = {
+  onSuccess?: () => void
+}
+
+export function AddUserModal({ onSuccess = () => { } }: AddUserModalProps) {
   const [open, setOpen] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const { loading, setLoading } = useLoading()
@@ -52,6 +56,7 @@ export function AddUserModal() {
       )
       showSuccessToast("User registration successful")
       handleReset()
+      onSuccess()
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Unknown error"
       showErrorToast(errorMessage)

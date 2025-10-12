@@ -141,7 +141,7 @@ export default function UserManagement() {
           <h1 className="text-2xl font-semibold tracking-tight">User Management</h1>
           <p className="text-sm text-muted-foreground">Manage users and their permissions</p>
         </div>
-        <AddUserModal />
+        <AddUserModal onSuccess={fetchProfile} />
       </div>
 
       {renderUsersData(users)}
