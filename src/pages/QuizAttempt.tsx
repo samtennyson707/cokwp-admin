@@ -6,6 +6,7 @@ import type { TQuizAttempt } from '@/types/quiz-attempt'
 import { fetchQuizById } from '@/services/quizzes'
 import { fetchQuestionsByQuizId } from '@/services/questions'
 import { createQuizAttempt, completeQuizAttempt } from '@/services/quiz-attempts'
+import { createAnswersBatch, calculateAttemptScore } from '@/services/answers'
 import { showErrorToast, showSuccessToast } from '@/lib/toast-util'
 import { useProfileStore } from '@/store/profile-store'
 import { Button } from '@/components/ui/button'
@@ -51,39 +52,67 @@ export default function QuizAttempt() {
       return
     }
     try {
-      const created = await createQuizAttempt({ quiz_id: quizId, user_id: profile.id })
+      const created = await createQuizAttempt({
+        quiz_id: quizId,
+        user_id: profile.id,
+      })
       setAttempt(created)
-      showSuccessToast('Attempt started')
+      showSuccessToast('Quiz started! Good luck!')
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to start attempt'
+      const msg = err instanceof Error ? err.message : 'Failed to start quiz attempt'
       showErrorToast(msg)
     }
   }
 
   function handlePickAnswer(questionId: string, option: string) {
     setAnswers((prev) => ({ ...prev, [questionId]: option }))
-  }
-
-  function calculateScore(): number {
-    if (questions.length === 0) return 0
-    const score = questions.reduce((sum, q) => sum + (answers[q.id] === q.correct_answer ? 1 : 0), 0)
-    return score
+    // Option A - Real-time saving (uncomment to enable):
+    // if (attempt) {
+    //   const question = questions.find(q => q.id === questionId)
+    //   if (question) {
+    //     createAnswer({
+    //       attempt_id: attempt.id,
+    //       question_id: questionId,
+    //       selected_option: option,
+    //       correct_option: question.correct_answer,
+    //     }).catch(err => {
+    //       showErrorToast('Failed to save answer')
+    //     })
+    //   }
+    // }
   }
 
   async function handleSubmitAttempt() {
     if (!attempt) {
-      showErrorToast('Start attempt first')
+      showErrorToast('Please start the quiz first')
+      return
+    }
+    if (Object.keys(answers).length === 0) {
+      showErrorToast('Please answer at least one question')
       return
     }
     try {
       setIsSubmitting(true)
-      const score = calculateScore()
+      const answerInputs = Object.entries(answers).map(([questionId, selectedOption]) => {
+        const question = questions.find((q) => q.id === questionId)
+        if (!question) {
+          throw new Error(`Question not found: ${questionId}`)
+        }
+        return {
+          attempt_id: attempt.id,
+          question_id: questionId,
+          selected_option: selectedOption,
+          correct_option: question.correct_answer,
+        }
+      })
+      await createAnswersBatch(answerInputs)
+      const score = await calculateAttemptScore(attempt.id)
       const updated = await completeQuizAttempt(attempt.id, { score })
       setAttempt(updated)
-      showSuccessToast(`Attempt submitted. Score: ${score}/${questions.length}`)
+      showSuccessToast(`Quiz submitted successfully! Score: ${score}/${questions.length}`)
       navigate(`/quizzes/${quizId}`)
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to submit attempt'
+      const msg = err instanceof Error ? err.message : 'Failed to submit quiz attempt'
       showErrorToast(msg)
     } finally {
       setIsSubmitting(false)

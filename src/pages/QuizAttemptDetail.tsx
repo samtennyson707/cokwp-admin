@@ -2,12 +2,9 @@ import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { fetchQuizAttemptById } from '@/services/quiz-attempts'
 import { fetchAnswersByAttemptId } from '@/services/answers'
-import { fetchQuizzesByIds } from '@/services/quizzes'
 import { fetchProfilesByIds } from '@/services/profiles'
-import { fetchQuestionsByQuizIdOrdered } from '@/services/questions'
-import type { TQuizAttempt } from '@/types/quiz-attempt'
+import type { TQuizAttempt, QuizSnapshot } from '@/types/quiz-attempt'
 import type { TAnswer } from '@/types/answer'
-import type { TQuiz } from '@/types/quiz'
 import type { TProfile } from '@/types/profile'
 import type { TQuestion } from '@/types/question'
 import { showErrorToast } from '@/lib/toast-util'
@@ -23,7 +20,7 @@ type QuestionWithAnswer = {
 export default function QuizAttemptDetail() {
   const { attemptId } = useParams<{ attemptId: string }>()
   const [attempt, setAttempt] = useState<TQuizAttempt | null>(null)
-  const [quiz, setQuiz] = useState<TQuiz | null>(null)
+  const [quizSnapshot, setQuizSnapshot] = useState<QuizSnapshot | null>(null)
   const [profile, setProfile] = useState<TProfile | null>(null)
   const [questionsWithAnswers, setQuestionsWithAnswers] = useState<QuestionWithAnswer[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -35,21 +32,17 @@ export default function QuizAttemptDetail() {
         setIsLoading(true)
         const attemptData = await fetchQuizAttemptById(attemptId)
         setAttempt(attemptData)
-        const [quizData] = await fetchQuizzesByIds([attemptData.quiz_id])
-        if (!quizData) {
-          throw new Error('Quiz not found')
+        if (!attemptData.snapshot_quiz) {
+          throw new Error('Quiz snapshot not found in attempt record')
         }
-        setQuiz(quizData)
+        setQuizSnapshot(attemptData.snapshot_quiz)
         const [profileData] = await fetchProfilesByIds([attemptData.user_id])
         if (!profileData) {
           throw new Error('User profile not found')
         }
         setProfile(profileData)
-        const [answers, questions] = await Promise.all([
-          fetchAnswersByAttemptId(attemptId),
-          fetchQuestionsByQuizIdOrdered(attemptData.quiz_id),
-        ])
-        const combined: QuestionWithAnswer[] = questions.map((question) => {
+        const answers = await fetchAnswersByAttemptId(attemptId)
+        const combined: QuestionWithAnswer[] = attemptData.snapshot_quiz.questions.map((question) => {
           const answer = answers.find((a) => a.question_id === question.id)
           return { question, answer }
         })
@@ -80,7 +73,7 @@ export default function QuizAttemptDetail() {
     )
   }
 
-  if (!attempt || !quiz || !profile) {
+  if (!attempt || !quizSnapshot || !profile) {
     return (
       <div className="w-full space-y-6">
         <div className="flex items-center justify-between">
@@ -146,28 +139,33 @@ export default function QuizAttemptDetail() {
       <Card>
         <CardHeader>
           <CardTitle>Quiz Information</CardTitle>
-          <CardDescription>Details about the quiz</CardDescription>
+          <CardDescription>Snapshot at the time of attempt</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <InfoItem label="Title" value={quiz.title} />
+            <InfoItem label="Title" value={quizSnapshot.title} />
             <InfoItem label="Total Questions" value={totalQuestions.toString()} />
             <InfoItem 
-              label="Status" 
-              value={quiz.is_active ? '🟢 Active' : '🔴 Inactive'} 
+              label="Status (at time)" 
+              value={quizSnapshot.is_active ? '🟢 Active' : '🔴 Inactive'} 
             />
             <InfoItem 
               label="Quiz ID" 
-              value={quiz.id.slice(0, 8) + '...'} 
+              value={quizSnapshot.id.slice(0, 8) + '...'} 
             />
-            {quiz.description && <InfoItem label="Description" value={quiz.description} className="md:col-span-2" />}
-            {quiz.created_at && (
+            {quizSnapshot.description && <InfoItem label="Description" value={quizSnapshot.description} className="md:col-span-2" />}
+            {quizSnapshot.created_at && (
               <InfoItem 
                 label="Quiz Created" 
-                value={formatDateTime(quiz.created_at)} 
+                value={formatDateTime(quizSnapshot.created_at)} 
                 className="md:col-span-2"
               />
             )}
+          </div>
+          <div className="mt-4 pt-4 border-t">
+            <p className="text-xs text-muted-foreground">
+              ℹ️ This shows the quiz as it was when the user took it. Any subsequent changes to the quiz are not reflected here.
+            </p>
           </div>
         </CardContent>
       </Card>

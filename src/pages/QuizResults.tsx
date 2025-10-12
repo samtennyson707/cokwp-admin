@@ -4,7 +4,6 @@ import { fetchQuizAttempts } from '@/services/quiz-attempts'
 import type { TQuizAttempt } from '@/types/quiz-attempt'
 import { showErrorToast } from '@/lib/toast-util'
 import { supabase } from '@/services/supabase'
-import { fetchAnswersByAttemptId } from '@/services/answers'
 import type { TAnswer } from '@/types/answer'
 import type { TQuiz } from '@/types/quiz'
 import type { TProfile } from '@/types/profile'
@@ -101,23 +100,6 @@ export default function QuizResults() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  async function handleToggle(attemptId: string) {
-    setExpandedAttemptId((prev) => (prev === attemptId ? null : attemptId))
-    if (!answersByAttemptId[attemptId]) {
-      try {
-        const answers = await fetchAnswersByAttemptId(attemptId)
-        setAnswersByAttemptId((prev) => ({ ...prev, [attemptId]: answers }))
-      } catch (err) {
-        const message = err instanceof Error ? err.message : 'Failed to load answers'
-        showErrorToast(message)
-      }
-    }
-  }
-
-  function handleViewDetails(attemptId: string) {
-    navigate(`/results/${attemptId}`)
-  }
-
   const columns: readonly ColumnDef<TQuizAttempt>[] = [
     {
       id: 'id',
@@ -131,7 +113,10 @@ export default function QuizResults() {
     {
       id: 'quiz',
       header: 'Quiz',
-      cell: (row) => <Link to={`/quizzes/${row.quiz_id}`} className="text-xs font-medium text-left hover:underline">{quizById[row.quiz_id]?.title ?? row.quiz_id}</Link>,
+      cell: (row) => {
+        const quizTitle = row.snapshot_quiz?.title ?? quizById[row.quiz_id]?.title ?? row.quiz_id
+        return <Link to={`/quizzes/${row.quiz_id}`} className="text-xs font-medium text-left hover:underline">{quizTitle}</Link>
+      },
       minWidth: 200,
       cardLabel: 'Quiz',
       cardOrder: 2,
@@ -222,7 +207,7 @@ export default function QuizResults() {
             rowKey={(row) => row.id}
             renderCardTitle={(row) => `Attempt ${row.id.slice(0, 8)}...`}
             renderCardSubtitle={(row) => {
-              const quizTitle = quizById[row.quiz_id]?.title ?? row.quiz_id
+              const quizTitle = row.snapshot_quiz?.title ?? quizById[row.quiz_id]?.title ?? row.quiz_id
               const p = profileById[row.user_id]
               const name = p ? `${p.first_name} ${p.last_name}` : row.user_id
               return (
