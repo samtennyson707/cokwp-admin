@@ -1,6 +1,7 @@
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import {
+  Menu,
   Package2,
   PanelLeft,
 } from 'lucide-react'
@@ -24,14 +25,18 @@ import { Input } from '@/components/ui/input'
 import { Link } from 'react-router-dom'
 import { ModeToggle } from '../components/mode-toggle'
 import { navigationLinks } from '../constants/navigation'
+import { useProfileStore } from '@/store/profile-store'
 
 const Header = () => {
+  const { profile } = useProfileStore()
+
+
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
-      <Sheet>
+      {/* <Sheet>
         <SheetTrigger asChild>
           <Button size="icon" variant="outline" className="sm:hidden">
-            <PanelLeft className="h-5 w-5" />
+            <Menu className="h-5 w-5" />
             <span className="sr-only">Toggle Menu</span>
           </Button>
         </SheetTrigger>
@@ -59,8 +64,8 @@ const Header = () => {
             })}
           </nav>
         </SheetContent>
-      </Sheet>
-      <Breadcrumb className="hidden md:flex">
+      </Sheet> */}
+      {/* <Breadcrumb className="hidden md:flex">
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
@@ -78,17 +83,18 @@ const Header = () => {
             <BreadcrumbPage>All Products</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
-      </Breadcrumb>
-      <div className="relative ml-auto flex-1 md:grow-0">
+      </Breadcrumb> */}
+      {/* <div className="relative ml-auto flex-1 md:grow-0">
         <div className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
         <Input
           type="search"
           placeholder="Search..."
           className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[320px]"
         />
-      </div>
-      <ModeToggle />
-      <DropdownMenu>
+      </div> */}
+      {/* {renderProfileRole()}
+      <ModeToggle /> */}
+      {/* <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
             variant="outline"
@@ -112,7 +118,7 @@ const Header = () => {
           <DropdownMenuSeparator />
           <DropdownMenuItem>Logout</DropdownMenuItem>
         </DropdownMenuContent>
-      </DropdownMenu>
+      </DropdownMenu> */}
     </header>
   )
 }

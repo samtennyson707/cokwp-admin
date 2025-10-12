@@ -13,7 +13,8 @@ export default function UserManagement() {
     if (error) {
       throw new Error(error.message)
     }
-    setUsers(data)
+    const filteredUsers = data.filter((user) => user.isAdmin === false)
+    setUsers(filteredUsers)
   }
 
   useEffect(() => {

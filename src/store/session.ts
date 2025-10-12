@@ -46,9 +46,9 @@ export const useSessionStore = create<SessionState>()(
             id: data?.user?.id,
             first_name: email.split('@')[0] + '_first',
             last_name: email.split('@')[0] + '_last',
-            avatar_url: 'https://example.com/avatar.jpg',
+            avatar_url: null,
             isAdmin: true,
-            phone: ''
+            email,
           })
           if (profileError) {
             throw new Error(profileError.message)
@@ -68,14 +68,14 @@ export const useSessionStore = create<SessionState>()(
             id: data?.user?.id,
             first_name,
             last_name,
-            avatar_url: 'https://example.com/avatar.jpg',
+            avatar_url: null,
             isAdmin: false,
+            email,
             phone: ''
           })
           if (profileError) {
             throw new Error(profileError.message)
           }
-          set(() => ({ userSession: data.user, isAuthenticated: true }))
         },
       }),
       {

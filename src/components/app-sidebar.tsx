@@ -10,12 +10,23 @@ import { navigationLinks } from "../constants/navigation"
 import { NavLink } from "react-router-dom"
 import { useSessionStore } from "@/store/session";
 import { Button } from "./ui/button";
+import { useProfileStore } from "@/store/profile-store";
 
 export function AppSidebar() {
   const { handleSignOut } = useSessionStore()
+  const { profile } = useProfileStore()
 
   const handleLogout = async () => {
     await handleSignOut()
+  }
+
+  const renderProfileRole = () => {
+    const baseClass = 'text-lg uppercase rounded-full font-medium border border-green-500 px-2 w-fit'
+    return (
+      profile?.isAdmin ?
+        <div className={`${baseClass} text-green-500`}>Admin</div>
+        : <div className={`${baseClass} text-blue-500`}>Student</div>
+    )
   }
   return (
     <Sidebar>
@@ -41,6 +52,12 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
+        <div className="text-xs text-foreground/80 mb-2">
+          {renderProfileRole()}
+        </div>
+        <div className="text-sm font-medium text-foreground line-clamp-1 mb-2">
+          {profile?.email || ""}
+        </div>
         <Button variant={"destructive"} onClick={handleLogout}>Logout</Button>
       </SidebarFooter>
     </Sidebar>

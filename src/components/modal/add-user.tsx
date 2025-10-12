@@ -26,6 +26,7 @@ import { userRegistrationFormSchema } from '@/lib/validation-schemas'
 import { showErrorToast, showSuccessToast } from '@/lib/toast-util'
 import { useSessionStore } from '@/store/session'
 import { Input } from "@/components/ui/input";
+import { useLoading } from "@/hooks/use-loading";
 
 type MyModalProps = {
 
@@ -35,6 +36,7 @@ const formSchema = userRegistrationFormSchema
 export function AddUserModal({ }: MyModalProps) {
   const { handleUserRegistration } = useSessionStore()
   const [showPassword, setShowPassword] = useState(false);
+  const { loading, setLoading } = useLoading()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -53,12 +55,15 @@ export function AddUserModal({ }: MyModalProps) {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
+      setLoading(true)
       await handleUserRegistration(values.email, values.password, values.first_name, values.last_name)
       showSuccessToast('User registration successful')
       handleReset()
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error'
       showErrorToast(errorMessage)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -161,7 +166,7 @@ export function AddUserModal({ }: MyModalProps) {
                     </FormItem>
                   )}
                 />
-                <Button type='submit'>
+                <Button loading={loading} type='submit'>
                   Add New User
                 </Button>
               </div>
