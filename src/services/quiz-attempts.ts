@@ -2,6 +2,7 @@ import { supabase } from '@/services/supabase'
 import type { TQuizAttempt, QuizAttemptCreateInput, QuizAttemptCompleteInput, QuizSnapshot } from '@/types/quiz-attempt'
 import { fetchQuizById } from './quizzes'
 import { fetchQuestionsByQuizId } from './questions'
+import { useProfileStore } from '@/store/profile-store'
 
 /**
  * Creates a new quiz attempt with a snapshot of the quiz and questions
@@ -43,10 +44,19 @@ export async function completeQuizAttempt(id: string, input: QuizAttemptComplete
 }
 
 export async function fetchQuizAttempts(): Promise<TQuizAttempt[]> {
-  const { data, error } = await supabase
+  const { profile, isAdmin } = useProfileStore.getState();
+
+  let query = supabase
     .from('quiz_attempts')
     .select('*')
     .order('started_at', { ascending: false })
+
+  // 🔹 Apply filter only if user is NOT admin
+  if (!isAdmin) {
+    query = query.eq("user_id", profile?.id);
+  }
+
+  const { data, error } = await query;
   if (error) {
     throw new Error(error.message)
   }
