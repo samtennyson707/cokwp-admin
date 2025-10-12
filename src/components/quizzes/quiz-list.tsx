@@ -38,6 +38,14 @@ export default function QuizList({ quizzes, onUpdated, onDeleted }: QuizListProp
 
   const columns: readonly ColumnDef<TQuiz>[] = [
     {
+      id: 'id',
+      header: 'ID',
+      className: 'min-w-[60px]',
+      cell: (row) => <Link to={`/quizzes/${row.id}`} className="text-xs font-medium text-left hover:underline">{row.id}</Link>,
+      cardLabel: 'ID',
+      cardOrder: 1,
+    },
+    {
       id: 'title',
       header: 'Title',
       cell: (row) => <span>{row.title}</span>,
@@ -64,12 +72,12 @@ export default function QuizList({ quizzes, onUpdated, onDeleted }: QuizListProp
       header: 'Active',
       cell: (row) => (
         <div className="flex items-center gap-2">
-          <Switch 
+          {/* <Switch 
             checked={row.is_active} 
             onCheckedChange={() => handleToggleStatus(row)}
             disabled={isToggling[row.id]}
-          />
-          <span className="text-xs text-muted-foreground">
+          /> */}
+          <span className={`text-xs font-bold ${row.is_active ? 'text-green-900' : 'text-red-900'}`}>
             {row.is_active ? 'Active' : 'Inactive'}
           </span>
         </div>

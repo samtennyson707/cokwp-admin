@@ -8,6 +8,8 @@ export const useProfileStore = create<ProfileState>()(
     persist(
       (set) => ({
         profile: null,
+        isAdmin: false,
+        setIsAdmin: (isAdmin: boolean) => set({ isAdmin }, false, "setIsAdmin"),
         setProfile: (profile: TProfile | null) =>
           set({ profile }, false, "setProfile"),
         fetchProfile: async (userId: string) => {
@@ -16,7 +18,7 @@ export const useProfileStore = create<ProfileState>()(
             .select()
             .eq("id", userId)
             .single();
-          if (data) set({ profile: data }, false, "fetchProfile");
+          if (data) set({ profile: data, isAdmin: data.isAdmin }, false, "fetchProfile");
           if (error) console.error(error);
         },
       }),

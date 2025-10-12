@@ -1,5 +1,7 @@
 export type ProfileState = {
     profile: TProfile | null,
+    isAdmin: boolean,
+    setIsAdmin: (isAdmin: boolean) => void,
     setProfile: (profile: TProfile | null) => void,
     fetchProfile: (userId: string) => Promise<void>,
 }

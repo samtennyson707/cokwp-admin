@@ -27,7 +27,7 @@ export default function QuizAttemptDetail() {
   const [profile, setProfile] = useState<TProfile | null>(null)
   const [questionsWithAnswers, setQuestionsWithAnswers] = useState<QuestionWithAnswer[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(true)
-
+  
   useEffect(() => {
     async function loadAttemptDetails() {
       if (!attemptId) return

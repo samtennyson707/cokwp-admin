@@ -51,7 +51,7 @@ const appRoutes: readonly AppRoute[] = [
     path: '/quizzes/:id/attempt',
     element: <QuizAttempt />,
     isProtected: true,
-    allowRoles: ['admin', 'student'],
+    allowRoles: ['student'],
   },
   {
     path: '/questions',

@@ -3,11 +3,10 @@ import type { TQuiz, QuizCreateInput, QuizUpdateInput } from '@/types/quiz'
 import { useProfileStore } from '@/store/profile-store'
 
 export async function fetchQuizzes(): Promise<TQuiz[]> {
-  const { profile } = useProfileStore.getState();
+  const { isAdmin } = useProfileStore.getState();
 
-  if (!profile) {
+  if (!isAdmin) {
     console.log("No profile found");
-    return []
   }
 
   let query = supabase
@@ -24,7 +23,7 @@ export async function fetchQuizzes(): Promise<TQuiz[]> {
     .order("created_at", { ascending: false })
     
   // 🔹 Apply filter only if user is NOT admin
-  if (!profile.isAdmin) {
+  if (!isAdmin) {
     query = query.eq("is_active", true);
   }
 

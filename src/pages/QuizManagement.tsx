@@ -11,7 +11,8 @@ export default function QuizManagement() {
   useProfileStore()
   const [quizzes, setQuizzes] = useState<TQuiz[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
-
+  const isAdmin = useProfileStore(state => state.isAdmin)
+  
   async function loadQuizzes() {
     try {
       setIsLoading(true)
@@ -67,9 +68,9 @@ export default function QuizManagement() {
       <div>
         <h1 className="text-xl font-semibold">Quizzes</h1>
       </div>
-      <div className="max-w-md">
+      {isAdmin && <div className="max-w-md">
         <AddQuizModal onCreated={handleCreated} />
-      </div>
+      </div>}
       {isLoading ? (
         <div>Loading...</div>
       ) : (

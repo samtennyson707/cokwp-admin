@@ -205,7 +205,7 @@ export default function UserDetail() {
             <CardHeader>
               <CardTitle className="text-base">Actions</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
+            <CardContent className="flex md:flex-row flex-col gap-2">
               <EditUserModal user={user} onUpdated={handleUserUpdated} />
               <DeleteUserModal user={user} onDeleted={handleUserDeleted} />
             </CardContent>

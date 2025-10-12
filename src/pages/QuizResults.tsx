@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { fetchQuizAttempts } from '@/services/quiz-attempts'
 import type { TQuizAttempt } from '@/types/quiz-attempt'
 import { showErrorToast } from '@/lib/toast-util'
@@ -120,17 +120,18 @@ export default function QuizResults() {
 
   const columns: readonly ColumnDef<TQuizAttempt>[] = [
     {
-      id: 'attempt',
-      header: 'Attempt',
-      cell: (row) => <span className="font-medium">{row.id.slice(0, 8)}...</span>,
+      id: 'id',
+      header: 'ID',
+      className: 'min-w-[60px]',
+      cell: (row) => <Link to={`/results/${row.id}`} className="text-xs font-medium text-left hover:underline">{row.id}</Link>,
       minWidth: 120,
-      cardLabel: 'Attempt',
+      cardLabel: 'ID',
       cardOrder: 1,
     },
     {
       id: 'quiz',
       header: 'Quiz',
-      cell: (row) => <span>{quizById[row.quiz_id]?.title ?? row.quiz_id}</span>,
+      cell: (row) => <Link to={`/quizzes/${row.quiz_id}`} className="text-xs font-medium text-left hover:underline">{quizById[row.quiz_id]?.title ?? row.quiz_id}</Link>,
       minWidth: 200,
       cardLabel: 'Quiz',
       cardOrder: 2,

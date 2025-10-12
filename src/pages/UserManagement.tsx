@@ -70,7 +70,7 @@ export default function UserManagement() {
     {
       id: 'id',
       header: 'ID',
-      className: 'min-w-[80px]',
+      className: 'min-w-[60px]',
       cell: (row) => (
         <Link
           to={`/users/${row.id}`}
@@ -147,22 +147,22 @@ export default function UserManagement() {
         label: 'View Details', 
         onSelect: () => navigate(`/users/${user.id}`) 
       },
-      { 
-        id: 'edit', 
-        label: 'Edit User', 
-        onSelect: () => {
-          const editButton = document.querySelector(`[data-edit-user="${user.id}"]`) as HTMLElement
-          editButton?.click()
-        }
-      },
-      { 
-        id: 'delete', 
-        label: 'Delete User', 
-        onSelect: () => {
-          const deleteButton = document.querySelector(`[data-delete-user="${user.id}"]`) as HTMLElement
-          deleteButton?.click()
-        }
-      },
+      // { 
+      //   id: 'edit', 
+      //   label: 'Edit User', 
+      //   onSelect: () => {
+      //     const editButton = document.querySelector(`[data-edit-user="${user.id}"]`) as HTMLElement
+      //     editButton?.click()
+      //   }
+      // },
+      // { 
+      //   id: 'delete', 
+      //   label: 'Delete User', 
+      //   onSelect: () => {
+      //     const deleteButton = document.querySelector(`[data-delete-user="${user.id}"]`) as HTMLElement
+      //     deleteButton?.click()
+      //   }
+      // },
     ]
 
     return (

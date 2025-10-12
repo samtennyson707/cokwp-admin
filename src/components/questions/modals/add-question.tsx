@@ -9,6 +9,7 @@ import { z } from 'zod'
 import { questionFormSchema } from '@/lib/validation-schemas'
 import type { TQuiz } from '@/types/quiz'
 import { fetchQuizzes } from '@/services/quizzes'
+import { useProfileStore } from '@/store/profile-store'
 
 type AddQuestionModalProps = {
   onCreated?: (question: TQuestion) => void
@@ -17,6 +18,7 @@ type AddQuestionModalProps = {
 
 export default function AddQuestionModal({ onCreated, preferQuizId }: AddQuestionModalProps) {
   const [open, setOpen] = useState<boolean>(false)
+  const isAdmin = useProfileStore(state => state.isAdmin)
   const [quizzes, setQuizzes] = useState<TQuiz[]>([])
   const [loadingQuizzes, setLoadingQuizzes] = useState<boolean>(false)
 
@@ -57,6 +59,8 @@ export default function AddQuestionModal({ onCreated, preferQuizId }: AddQuestio
       showErrorToast(errorMessage)
     }
   }
+
+  if (!isAdmin) return null
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
