@@ -4,12 +4,8 @@ import DeleteQuizModal from '@/components/modal/delete-quiz'
 import { Button } from '@/components/ui/button'
 import { Link, useNavigate } from 'react-router-dom'
 import { ResponsiveTable, type ColumnDef } from '../responsive-table'
-import { Switch } from '@/components/ui/switch'
 import { ActionMenu } from '@/components/action-menu'
 import { MoreHorizontal } from 'lucide-react'
-import { toggleQuizStatus } from '@/services/quizzes'
-import { showErrorToast, showSuccessToast } from '@/lib/toast-util'
-import { useState } from 'react'
 
 type QuizListProps = {
   quizzes: readonly TQuiz[]
@@ -19,22 +15,6 @@ type QuizListProps = {
 
 export default function QuizList({ quizzes, onUpdated, onDeleted }: QuizListProps) {
   const navigate = useNavigate()
-  const [isToggling, setIsToggling] = useState<Record<string, boolean>>({})
-
-  async function handleToggleStatus(quiz: TQuiz) {
-    if (isToggling[quiz.id]) return
-    try {
-      setIsToggling((prev) => ({ ...prev, [quiz.id]: true }))
-      const updated = await toggleQuizStatus(quiz.id, !quiz.is_active)
-      onUpdated(updated)
-      showSuccessToast(`Quiz ${updated.is_active ? 'activated' : 'deactivated'} successfully`)
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to update quiz status'
-      showErrorToast(message)
-    } finally {
-      setIsToggling((prev) => ({ ...prev, [quiz.id]: false }))
-    }
-  }
 
   const columns: readonly ColumnDef<TQuiz>[] = [
     {

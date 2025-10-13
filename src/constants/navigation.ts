@@ -1,4 +1,4 @@
-import { Home, Users, BookOpen, ListChecks, BarChart2, type LucideProps } from "lucide-react";
+import { Home, Users, BookOpen, BarChart2, type LucideProps } from "lucide-react";
 import type { ForwardRefExoticComponent } from "react";
 import type { RefAttributes } from "react";
 

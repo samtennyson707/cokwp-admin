@@ -22,17 +22,14 @@ import { loginFormSchema } from '@/lib/validation-schemas'
 import { Eye, EyeOff } from 'lucide-react'
 import { useState } from 'react'
 import { useSessionStore } from '@/store/session'
-import { ADMIN_CREDENTIALS } from '@/constants/literals'
 import { useLoading } from '@/hooks/use-loading'
-import { serialize } from 'v8'
 
 const formSchema = loginFormSchema
 
 export default function Login() {
-  const { handleSignIn, handleAdminRegistration } = useSessionStore()
+  const { handleSignIn } = useSessionStore()
   const [showPassword, setShowPassword] = useState(false);
   const { loading: loadingLogin, setLoading: setLoadingLogin } = useLoading()
-  const { loading: loadingRegister, setLoading: setLoadingRegister } = useLoading()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -52,29 +49,6 @@ export default function Login() {
     } finally {
       setLoadingLogin(false)
     }
-  }
-
-  const handleRegisterAdminClick = async () => {
-    try {
-      setLoadingRegister(true)
-      await handleAdminRegistration(ADMIN_CREDENTIALS.email, ADMIN_CREDENTIALS.password)
-      showSuccessToast('Admin registration successful')
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-      showErrorToast(errorMessage)
-    } finally {
-      setLoadingRegister(false)
-    }
-  }
-
-  const renderAdminCredentialForTesting = () => {
-    return (
-      <div>
-        <p className="text-sm text-muted-foreground">Admin Credentials for Testing:</p>
-        <p className="text-sm text-muted-foreground">Email: {ADMIN_CREDENTIALS.email}</p>
-        <p className="text-sm text-muted-foreground">Password: {ADMIN_CREDENTIALS.password}</p>
-      </div>
-    )
   }
 
   return (

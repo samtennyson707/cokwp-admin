@@ -1,34 +1,4 @@
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
-import { Button } from '@/components/ui/button'
-import {
-  Menu,
-  Package2,
-  PanelLeft,
-} from 'lucide-react'
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Input } from '@/components/ui/input'
-import { Link } from 'react-router-dom'
-import { ModeToggle } from '../components/mode-toggle'
-import { navigationLinks } from '../constants/navigation'
-import { useProfileStore } from '@/store/profile-store'
-
 const Header = () => {
-  const { profile } = useProfileStore()
 
 
   return (

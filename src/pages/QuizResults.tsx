@@ -4,7 +4,6 @@ import { fetchQuizAttempts } from '@/services/quiz-attempts'
 import type { TQuizAttempt } from '@/types/quiz-attempt'
 import { showErrorToast } from '@/lib/toast-util'
 import { supabase } from '@/services/supabase'
-import type { TAnswer } from '@/types/answer'
 import type { TQuiz } from '@/types/quiz'
 import type { TProfile } from '@/types/profile'
 import { fetchQuizzesByIds } from '@/services/quizzes'
@@ -18,8 +17,6 @@ export default function QuizResults() {
   const navigate = useNavigate()
   const [attempts, setAttempts] = useState<TQuizAttempt[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(false)
-  const [expandedAttemptId, setExpandedAttemptId] = useState<string | null>(null)
-  const [answersByAttemptId, setAnswersByAttemptId] = useState<Record<string, TAnswer[]>>({})
   const [quizById, setQuizById] = useState<Record<string, TQuiz>>({})
   const [profileById, setProfileById] = useState<Record<string, TProfile>>({})
 
@@ -80,17 +77,6 @@ export default function QuizResults() {
             }
           }
           void ensureDetails()
-        }
-      })
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'answers' }, (payload) => {
-        // invalidate cached answers for the attempt
-        const attemptId = (payload.new as TAnswer)?.attempt_id ?? (payload.old as TAnswer)?.attempt_id
-        if (attemptId) {
-          setAnswersByAttemptId((prev) => {
-            const next = { ...prev }
-            delete next[attemptId]
-            return next
-          })
         }
       })
       .subscribe()
