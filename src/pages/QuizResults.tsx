@@ -14,6 +14,7 @@ import { ActionMenu } from '@/components/action-menu'
 import { MoreHorizontal } from 'lucide-react'
 import DeleteQuizAttemptModal from '@/components/modal/delete-quiz-attempt'
 import { useProfileStore } from '@/store/profile-store'
+import { formatLocalDateTime } from '@/lib/utils'
 
 export default function QuizResults() {
   const navigate = useNavigate()
@@ -125,7 +126,7 @@ export default function QuizResults() {
     {
       id: 'started',
       header: 'Started',
-      cell: (row) => <span className="text-xs text-muted-foreground">{row.started_at ? new Date(row.started_at).toLocaleString() : '-'}</span>,
+      cell: (row) => <span className="text-xs text-muted-foreground">{row.started_at ? formatLocalDateTime(row.started_at, { assumeUTCForNaive: true }).dateTime : '-'}</span>,
       minWidth: 180,
       cardLabel: 'Started',
       cardOrder: 4,
@@ -133,7 +134,7 @@ export default function QuizResults() {
     {
       id: 'completed',
       header: 'Completed',
-      cell: (row) => <span className="text-xs text-muted-foreground">{row.completed_at ? new Date(row.completed_at).toLocaleString() : '—'}</span>,
+      cell: (row) => <span className="text-xs text-muted-foreground">{row.completed_at ? formatLocalDateTime(row.completed_at, { assumeUTCForNaive: true }).dateTime : '—'}</span>,
       minWidth: 180,
       cardLabel: 'Completed',
       cardOrder: 5,

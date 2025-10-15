@@ -21,7 +21,7 @@ const appRoutes: readonly AppRoute[] = [
     path: '/dashboard',
     element: <Dashboard />,
     isProtected: true,
-    allowRoles: ['admin'],
+    allowRoles: ['admin', 'student'],
   },
   {
     path: '/users',

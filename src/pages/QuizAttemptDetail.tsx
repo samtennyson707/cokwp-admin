@@ -11,6 +11,7 @@ import { showErrorToast } from '@/lib/toast-util'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
+import { formatLocalDateTime } from '@/lib/utils'
 
 type QuestionWithAnswer = {
   question: TQuestion
@@ -151,13 +152,13 @@ export default function QuizAttemptDetail() {
             />
             <InfoItem 
               label="Quiz ID" 
-              value={quizSnapshot.id.slice(0, 8) + '...'} 
+              value={quizSnapshot.id} 
             />
             {quizSnapshot.description && <InfoItem label="Description" value={quizSnapshot.description} className="md:col-span-2" />}
             {quizSnapshot.created_at && (
               <InfoItem 
                 label="Quiz Created" 
-                value={formatDateTime(quizSnapshot.created_at)} 
+                value={formatLocalDateTime(quizSnapshot.created_at, { assumeUTCForNaive: true }).dateTime} 
                 className="md:col-span-2"
               />
             )}
@@ -219,11 +220,11 @@ export default function QuizAttemptDetail() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <InfoItem
               label="Started At"
-              value={attempt.started_at ? formatDateTime(attempt.started_at) : 'N/A'}
+              value={attempt.started_at ? formatLocalDateTime(attempt.started_at, { assumeUTCForNaive: true }).dateTime : 'N/A'}
             />
             <InfoItem
               label="Completed At"
-              value={attempt.completed_at ? formatDateTime(attempt.completed_at) : 'Not completed'}
+              value={attempt.completed_at ? formatLocalDateTime(attempt.completed_at, { assumeUTCForNaive: true }).dateTime : 'Not completed'}
             />
             <InfoItem label="Duration" value={duration} />
           </div>
