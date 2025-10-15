@@ -12,6 +12,8 @@ import { ResponsiveTable, type ColumnDef } from '@/components/responsive-table'
 import { Button } from '@/components/ui/button'
 import { ActionMenu } from '@/components/action-menu'
 import { MoreHorizontal } from 'lucide-react'
+import DeleteQuizAttemptModal from '@/components/modal/delete-quiz-attempt'
+import { useProfileStore } from '@/store/profile-store'
 
 export default function QuizResults() {
   const navigate = useNavigate()
@@ -19,6 +21,7 @@ export default function QuizResults() {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [quizById, setQuizById] = useState<Record<string, TQuiz>>({})
   const [profileById, setProfileById] = useState<Record<string, TProfile>>({})
+  const { isAdmin } = useProfileStore()
 
   useEffect(() => {
     async function loadAttempts() {
@@ -146,6 +149,9 @@ export default function QuizResults() {
   ]
 
   function QuizResultsActions({ lead }: { lead: TQuizAttempt }) {
+    const onDeleted = (attempt: TQuizAttempt) => {
+      setAttempts((prev) => prev.filter((a) => a.id !== attempt.id))
+    }
     // const openEditLead = (l: TQuizAttempt) => {
     //   setEditingLead(l);
     //   setIsUpdateLeadOpen(true);
@@ -157,15 +163,24 @@ export default function QuizResults() {
     //   setIsAssignAgentOpen(true);
     // };
 
-    const canAssignAgent = true;
     const menuItems = [
       { id: 'view', label: 'View Details', onSelect: () => navigate(`/results/${lead?.id || 'unknown'}`) },
-      { id: 'edit', label: 'Edit Lead', onSelect: () => { } },
-      ...(canAssignAgent ? [{ id: 'assign', label: 'Assign Agent', onSelect: () => { } }] : []),
-    ];
+      ...(isAdmin ? [{ id: 'delete', label: 'Delete Result', onSelect: () => {
+        const btn = document.querySelector(`[data-delete-attempt-trigger="${lead.id}"]`) as HTMLElement | null
+        btn?.click()
+      }}] : []),
+    ] as const
 
     return (
       <div className="relative">
+        {/* Hidden modal trigger for programmatic open */}
+        {isAdmin && (
+          <div className="hidden">
+            <span data-delete-attempt={lead.id}>
+              <DeleteQuizAttemptModal attempt={lead} onDeleted={onDeleted} />
+            </span>
+          </div>
+        )}
         <ActionMenu
           trigger={
             <Button variant="ghost" size="sm" className="h-5 w-5 p-0 hover:bg-gray-100">

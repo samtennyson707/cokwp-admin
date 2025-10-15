@@ -1,4 +1,4 @@
-import { supabase } from '@/services/supabase'
+import { supabase, supabaseServiceRole } from '@/services/supabase'
 import type { TQuizAttempt, QuizAttemptCreateInput, QuizAttemptCompleteInput, QuizSnapshot } from '@/types/quiz-attempt'
 import { fetchQuizById } from './quizzes'
 import { fetchQuestionsByQuizId } from './questions'
@@ -73,6 +73,29 @@ export async function fetchQuizAttemptById(id: string): Promise<TQuizAttempt> {
     throw new Error(error.message)
   }
   return data as TQuizAttempt
+}
+
+
+/**
+ * Deletes a quiz attempt and its related answers.
+ * Uses service role to ensure cascading deletes when RLS is enabled.
+ */
+export async function deleteQuizAttempt(id: string): Promise<void> {
+  // Delete child answers first to avoid FK constraint issues when cascade is not configured
+  const { error: answersError } = await supabaseServiceRole
+    .from('answers')
+    .delete()
+    .eq('attempt_id', id)
+  if (answersError) {
+    throw new Error(answersError.message)
+  }
+  const { error: attemptError } = await supabaseServiceRole
+    .from('quiz_attempts')
+    .delete()
+    .eq('id', id)
+  if (attemptError) {
+    throw new Error(attemptError.message)
+  }
 }
 
 
